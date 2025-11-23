@@ -1,87 +1,87 @@
 #!/bin/bash
-# Скрипт для сборки и публикации Docker образа
+# Script for building and publishing Docker image
 
 set -e
 
-# Цвета для вывода
+# Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-# Конфигурация
+# Configuration
 IMAGE_NAME="watsonx-mcp"
 VERSION="${1:-latest}"
-REGISTRY="${DOCKER_REGISTRY:-docker.io}"  # По умолчанию Docker Hub
+REGISTRY="${DOCKER_REGISTRY:-docker.io}"  # Docker Hub by default
 USERNAME="${DOCKER_USERNAME}"
 
-echo -e "${GREEN}🐳 Сборка Docker образа для watsonxMCP${NC}"
+echo -e "${GREEN}🐳 Building Docker image for watsonxMCP${NC}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-# Проверка наличия Dockerfile
+# Check if Dockerfile exists
 if [ ! -f "Dockerfile" ]; then
-    echo -e "${RED}❌ Ошибка: Dockerfile не найден${NC}"
+    echo -e "${RED}❌ Error: Dockerfile not found${NC}"
     exit 1
 fi
 
-# Сборка образа
-echo -e "${YELLOW}📦 Сборка образа...${NC}"
+# Build image
+echo -e "${YELLOW}📦 Building image...${NC}"
 docker build -t ${IMAGE_NAME}:${VERSION} .
 
 if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✅ Образ успешно собран: ${IMAGE_NAME}:${VERSION}${NC}"
+    echo -e "${GREEN}✅ Image built successfully: ${IMAGE_NAME}:${VERSION}${NC}"
 else
-    echo -e "${RED}❌ Ошибка при сборке образа${NC}"
+    echo -e "${RED}❌ Error building image${NC}"
     exit 1
 fi
 
-# Тегирование образа
-echo -e "${YELLOW}🏷️  Тегирование образа...${NC}"
+# Tag image
+echo -e "${YELLOW}🏷️  Tagging image...${NC}"
 docker tag ${IMAGE_NAME}:${VERSION} ${IMAGE_NAME}:latest
 
-# Показываем размер образа
-echo -e "${YELLOW}📊 Размер образа:${NC}"
+# Show image size
+echo -e "${YELLOW}📊 Image size:${NC}"
 docker images ${IMAGE_NAME} --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}"
 
 echo ""
-echo -e "${GREEN}✨ Сборка завершена!${NC}"
+echo -e "${GREEN}✨ Build complete!${NC}"
 echo ""
-echo "Доступные команды:"
-echo "  Запустить локально:    docker run -d -p 8000:8000 ${IMAGE_NAME}:${VERSION}"
-echo "  Запустить compose:     docker-compose up -d"
-echo "  Просмотр логов:        docker logs -f ${IMAGE_NAME}"
+echo "Available commands:"
+echo "  Run locally:           docker run -d -p 8000:8000 ${IMAGE_NAME}:${VERSION}"
+echo "  Run with compose:      docker-compose up -d"
+echo "  View logs:             docker logs -f ${IMAGE_NAME}"
 echo ""
 
-# Опциональная публикация
+# Optional publishing
 if [ ! -z "$USERNAME" ]; then
-    echo -e "${YELLOW}📤 Хотите опубликовать образ? (y/n)${NC}"
+    echo -e "${YELLOW}📤 Do you want to publish the image? (y/n)${NC}"
     read -r response
     
     if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        echo -e "${YELLOW}🔐 Вход в ${REGISTRY}...${NC}"
+        echo -e "${YELLOW}🔐 Logging into ${REGISTRY}...${NC}"
         docker login ${REGISTRY}
         
-        # Тегирование для registry
+        # Tag for registry
         FULL_IMAGE="${REGISTRY}/${USERNAME}/${IMAGE_NAME}"
         docker tag ${IMAGE_NAME}:${VERSION} ${FULL_IMAGE}:${VERSION}
         docker tag ${IMAGE_NAME}:${VERSION} ${FULL_IMAGE}:latest
         
-        echo -e "${YELLOW}📤 Публикация образа...${NC}"
+        echo -e "${YELLOW}📤 Publishing image...${NC}"
         docker push ${FULL_IMAGE}:${VERSION}
         docker push ${FULL_IMAGE}:latest
         
-        echo -e "${GREEN}✅ Образ опубликован:${NC}"
+        echo -e "${GREEN}✅ Image published:${NC}"
         echo "   ${FULL_IMAGE}:${VERSION}"
         echo "   ${FULL_IMAGE}:latest"
         echo ""
-        echo "Для использования:"
+        echo "To use:"
         echo "   docker pull ${FULL_IMAGE}:${VERSION}"
         echo "   docker run -d -p 8000:8000 ${FULL_IMAGE}:${VERSION}"
     fi
 else
-    echo -e "${YELLOW}💡 Для публикации установите переменные:${NC}"
+    echo -e "${YELLOW}💡 To publish, set environment variables:${NC}"
     echo "   export DOCKER_USERNAME=your-username"
-    echo "   export DOCKER_REGISTRY=docker.io  # или ghcr.io, gcr.io и т.д."
+    echo "   export DOCKER_REGISTRY=docker.io  # or ghcr.io, gcr.io, etc."
     echo "   ./docker-build.sh ${VERSION}"
 fi
 

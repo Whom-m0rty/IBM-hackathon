@@ -1,15 +1,15 @@
-# 🚀 Быстрый Deploy (5-10 минут)
+# 🚀 Quick Deploy (5-10 minutes)
 
-## ⚡ Вариант 1: GitHub + Ngrok (ПРЯМО СЕЙЧАС - 2 минуты)
+## ⚡ Option 1: GitHub + Ngrok (RIGHT NOW - 2 minutes)
 
-Ваш API уже работает! Нужно только залить на GitHub.
+Your API is already working! Just need to upload to GitHub.
 
-### Шаги:
+### Steps:
 
 ```bash
 cd /Users/whom/Documents/watsonxMCP
 
-# 1. Создайте .gitignore
+# 1. Create .gitignore
 cat > .gitignore << 'EOF'
 *.pyc
 __pycache__/
@@ -20,92 +20,91 @@ venv/
 .streamlit/secrets.toml
 EOF
 
-# 2. Инициализируйте git
+# 2. Initialize git
 git init
 git add .
 git commit -m "Initial commit: HR Onboarding Checklist"
 
-# 3. Создайте репозиторий на GitHub.com
-# Перейдите на https://github.com/new
-# Имя: watsonx-onboarding-mcp
+# 3. Create repository on GitHub.com
+# Go to https://github.com/new
+# Name: watsonx-onboarding-mcp
 # Public ✅
-# Не добавляйте README (у нас уже есть)
+# Don't add README (we already have one)
 
-# 4. Залейте код
+# 4. Push code
 git remote add origin https://github.com/YOUR_USERNAME/watsonx-onboarding-mcp.git
 git branch -M main
 git push -u origin main
 ```
 
-### Ваши ссылки:
+### Your Links:
 
 - **GitHub Repository:** `https://github.com/YOUR_USERNAME/watsonx-onboarding-mcp`
 - **Application URL:** `https://c16f287ee8a0.ngrok-free.app`
 - **API Docs:** `https://c16f287ee8a0.ngrok-free.app/docs`
 
-✅ **Готово за 2 минуты!**
+✅ **Done in 2 minutes!**
 
 ---
 
-## 🎨 Вариант 2: Streamlit Cloud (10 минут, красивый UI)
+## 🎨 Option 2: Streamlit Cloud (10 minutes, beautiful UI)
 
-Создайте веб-интерфейс на Streamlit Cloud (бесплатно).
+Create web interface on Streamlit Cloud (free).
 
-### Шаги:
+### Steps:
 
-**1. Залейте на GitHub (если еще не сделали):**
+**1. Push to GitHub (if not already done):**
 ```bash
-# См. Вариант 1 выше
+# See Option 1 above
 ```
 
-**2. Запустите локально для теста:**
+**2. Run locally for testing:**
 ```bash
 cd /Users/whom/Documents/watsonxMCP
 
-# Убедитесь, что http_server.py запущен
-python3 http_server.py  # Терминал 1
+# Make sure http_server.py is running
+python3 http_server.py  # Terminal 1
 
-# В другом терминале:
-☁  watsonxMCP  streamlit run streamlit_app.py
-zsh: command not found: streamlit
+# In another terminal:
+streamlit run streamlit_app.py
 ```
 
-Откроется `http://localhost:8501` - проверьте, что все работает!
+Open `http://localhost:8501` - verify everything works!
 
-**3. Deploy на Streamlit Cloud:**
+**3. Deploy to Streamlit Cloud:**
 
-1. Перейдите на https://share.streamlit.io/
-2. Войдите через GitHub
-3. Нажмите **"New app"**
-4. Выберите:
+1. Go to https://share.streamlit.io/
+2. Login via GitHub
+3. Click **"New app"**
+4. Select:
    - Repository: `YOUR_USERNAME/watsonx-onboarding-mcp`
    - Branch: `main`
    - Main file path: `streamlit_app.py`
-5. **Advanced settings** → **Secrets** → добавьте:
+5. **Advanced settings** → **Secrets** → add:
    ```toml
    API_URL = "https://c16f287ee8a0.ngrok-free.app"
    ```
-6. Нажмите **Deploy**
+6. Click **Deploy**
 
-**4. Ждите 2-3 минуты**
+**4. Wait 2-3 minutes**
 
-Ваше приложение будет доступно на:
+Your app will be available at:
 ```
 https://YOUR_USERNAME-watsonx-onboarding-mcp-streamlit-app-xyz123.streamlit.app
 ```
 
-✅ **У вас теперь есть:**
+✅ **You now have:**
 - Public GitHub Repository ✅
 - Beautiful Web UI ✅
 - Live Application URL ✅
 
 ---
 
-## 🔥 Вариант 3: Vercel (для продакшен)
+## 🔥 Option 3: Vercel (for production)
 
-Deploy FastAPI на Vercel (бесплатно, постоянный URL).
+Deploy FastAPI to Vercel (free, permanent URL).
 
-**1. Создайте `vercel.json`:**
+**1. Create `vercel.json`:**
 ```bash
 cd /Users/whom/Documents/watsonxMCP
 
@@ -129,14 +128,14 @@ EOF
 
 **2. Deploy:**
 ```bash
-# Установите Vercel CLI
+# Install Vercel CLI
 npm install -g vercel
 
 # Deploy
 cd /Users/whom/Documents/watsonxMCP
 vercel
 
-# Следуйте инструкциям (войдите через GitHub)
+# Follow instructions (login via GitHub)
 ```
 
 **3. Production deploy:**
@@ -144,64 +143,63 @@ vercel
 vercel --prod
 ```
 
-Получите постоянный URL:
+Get permanent URL:
 ```
 https://watsonx-onboarding-mcp.vercel.app
 ```
 
 ---
 
-## 📝 Чеклист для сдачи
+## 📝 Submission Checklist
 
 - [ ] Public GitHub Repository
-- [ ] README.md с инструкциями
-- [ ] Application URL (работает)
-- [ ] Интерактивная демка
+- [ ] README.md with instructions
+- [ ] Application URL (working)
+- [ ] Interactive demo
 
-### Минимум (Вариант 1):
+### Minimum (Option 1):
 - GitHub: ✅
 - Application URL: ngrok URL ✅
 - Swagger Docs: `/docs` ✅
 
-### Максимум (Вариант 2):
+### Maximum (Option 2):
 - GitHub: ✅
-- Streamlit UI: красивый интерфейс ✅
-- Полная функциональность ✅
+- Streamlit UI: beautiful interface ✅
+- Full functionality ✅
 
 ---
 
 ## 🆘 Troubleshooting
 
-**Ngrok URL изменился?**
+**Ngrok URL changed?**
 ```bash
-# Обновите в .streamlit/secrets.toml
+# Update in .streamlit/secrets.toml
 API_URL = "https://NEW_NGROK_URL.ngrok-free.app"
 
-# Или используйте платный ngrok для статичного URL
+# Or use paid ngrok for static URL
 ngrok http 8000 --domain=your-static-domain.ngrok-free.app
 ```
 
-**Streamlit не видит API?**
-- Проверьте, что `http_server.py` запущен
-- Проверьте, что ngrok работает
-- Проверьте URL в secrets
+**Streamlit can't see API?**
+- Check that `http_server.py` is running
+- Check that ngrok is working
+- Check URL in secrets
 
 **GitHub push fails?**
 ```bash
-# Используйте Personal Access Token
+# Use Personal Access Token
 # Settings → Developer settings → Personal access tokens
 git remote set-url origin https://YOUR_TOKEN@github.com/YOUR_USERNAME/repo.git
 ```
 
 ---
 
-## 🎯 Рекомендация
+## 🎯 Recommendation
 
-**Для быстрой сдачи:** Используйте **Вариант 1** (2 минуты)
+**For quick submission:** Use **Option 1** (2 minutes)
 
-**Для впечатления:** Используйте **Вариант 2** (10 минут)
+**For impression:** Use **Option 2** (10 minutes)
 
-**Для production:** Используйте **Вариант 3** (15 минут)
+**For production:** Use **Option 3** (15 minutes)
 
-Удачи! 🚀
-
+Good luck! 🚀

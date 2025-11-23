@@ -1,16 +1,16 @@
 # 🐳 Docker Deployment Guide
 
-Полное руководство по развертыванию MCP сервера в Docker контейнере и публикации в облачные платформы.
+Complete guide for deploying the MCP server in a Docker container and publishing to cloud platforms.
 
-## 📦 Быстрый старт
+## 📦 Quick Start
 
-### Локальный запуск
+### Local Run
 
 ```bash
-# Сборка образа
+# Build image
 docker build -t watsonx-mcp:latest .
 
-# Запуск контейнера
+# Run container
 docker run -d \
   --name watsonx-mcp \
   -p 8000:8000 \
@@ -18,141 +18,141 @@ docker run -d \
   -v $(pwd)/config.json:/app/config.json \
   watsonx-mcp:latest
 
-# Проверка работы
+# Check operation
 curl http://localhost:8000/health
 ```
 
-### Docker Compose (рекомендуется)
+### Docker Compose (recommended)
 
 ```bash
-# Запуск всех сервисов
+# Start all services
 docker-compose up -d
 
-# Просмотр логов
+# View logs
 docker-compose logs -f
 
-# Остановка
+# Stop
 docker-compose down
 
-# Остановка с удалением volumes
+# Stop and remove volumes
 docker-compose down -v
 ```
 
-## 🚀 Публикация в Container Registry
+## 🚀 Publishing to Container Registry
 
 ### 1. Docker Hub
 
 ```bash
-# Логин
+# Login
 docker login
 
-# Тегирование образа
+# Tag image
 docker tag watsonx-mcp:latest YOUR_USERNAME/watsonx-mcp:latest
 docker tag watsonx-mcp:latest YOUR_USERNAME/watsonx-mcp:v1.0.0
 
-# Публикация
+# Publish
 docker push YOUR_USERNAME/watsonx-mcp:latest
 docker push YOUR_USERNAME/watsonx-mcp:v1.0.0
 
-# Запуск из Docker Hub
+# Run from Docker Hub
 docker run -d -p 8000:8000 YOUR_USERNAME/watsonx-mcp:latest
 ```
 
 ### 2. GitHub Container Registry (ghcr.io)
 
 ```bash
-# Логин (используйте Personal Access Token с правами write:packages)
+# Login (use Personal Access Token with write:packages permissions)
 echo $GITHUB_TOKEN | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
 
-# Тегирование
+# Tag
 docker tag watsonx-mcp:latest ghcr.io/YOUR_GITHUB_USERNAME/watsonx-mcp:latest
 docker tag watsonx-mcp:latest ghcr.io/YOUR_GITHUB_USERNAME/watsonx-mcp:v1.0.0
 
-# Публикация
+# Publish
 docker push ghcr.io/YOUR_GITHUB_USERNAME/watsonx-mcp:latest
 docker push ghcr.io/YOUR_GITHUB_USERNAME/watsonx-mcp:v1.0.0
 
-# Запуск из GHCR
+# Run from GHCR
 docker run -d -p 8000:8000 ghcr.io/YOUR_GITHUB_USERNAME/watsonx-mcp:latest
 ```
 
 ### 3. Google Container Registry (gcr.io)
 
 ```bash
-# Настройка gcloud
+# Setup gcloud
 gcloud auth configure-docker
 
-# Тегирование
+# Tag
 docker tag watsonx-mcp:latest gcr.io/YOUR_PROJECT_ID/watsonx-mcp:latest
 
-# Публикация
+# Publish
 docker push gcr.io/YOUR_PROJECT_ID/watsonx-mcp:latest
 
-# Запуск
+# Run
 docker run -d -p 8000:8000 gcr.io/YOUR_PROJECT_ID/watsonx-mcp:latest
 ```
 
 ### 4. Amazon ECR
 
 ```bash
-# Логин
+# Login
 aws ecr get-login-password --region YOUR_REGION | docker login --username AWS --password-stdin YOUR_ACCOUNT_ID.dkr.ecr.YOUR_REGION.amazonaws.com
 
-# Создание репозитория (если еще не создан)
+# Create repository (if not already created)
 aws ecr create-repository --repository-name watsonx-mcp --region YOUR_REGION
 
-# Тегирование
+# Tag
 docker tag watsonx-mcp:latest YOUR_ACCOUNT_ID.dkr.ecr.YOUR_REGION.amazonaws.com/watsonx-mcp:latest
 
-# Публикация
+# Publish
 docker push YOUR_ACCOUNT_ID.dkr.ecr.YOUR_REGION.amazonaws.com/watsonx-mcp:latest
 ```
 
-## ☁️ Развертывание в облаке
+## ☁️ Cloud Deployment
 
 ### Render.com
 
-1. Создайте аккаунт на [Render.com](https://render.com)
-2. Нажмите "New +" → "Web Service"
-3. Подключите ваш GitHub репозиторий
-4. Настройки:
+1. Create account at [Render.com](https://render.com)
+2. Click "New +" → "Web Service"
+3. Connect your GitHub repository
+4. Settings:
    - **Environment**: Docker
    - **Dockerfile Path**: `./Dockerfile`
    - **Port**: 8000
    - **Health Check Path**: `/health`
-5. Добавьте переменные окружения (если нужно)
-6. Нажмите "Create Web Service"
+5. Add environment variables (if needed)
+6. Click "Create Web Service"
 
-**Стоимость**: Бесплатный tier доступен
+**Cost**: Free tier available
 
 ### Railway.app
 
 ```bash
-# Установка Railway CLI
+# Install Railway CLI
 npm install -g @railway/cli
 
-# Логин
+# Login
 railway login
 
-# Инициализация проекта
+# Initialize project
 railway init
 
-# Развертывание
+# Deploy
 railway up
 
-# Открыть в браузере
+# Open in browser
 railway open
 ```
 
-**Dockerfile будет автоматически определен и использован**
+**Dockerfile will be automatically detected and used**
 
 ### Google Cloud Run
 
 ```bash
-# Сборка и публикация
+# Build and publish
 gcloud builds submit --tag gcr.io/YOUR_PROJECT_ID/watsonx-mcp
 
-# Развертывание
+# Deploy
 gcloud run deploy watsonx-mcp \
   --image gcr.io/YOUR_PROJECT_ID/watsonx-mcp \
   --platform managed \
@@ -160,46 +160,46 @@ gcloud run deploy watsonx-mcp \
   --allow-unauthenticated \
   --port 8000
 
-# Получить URL
+# Get URL
 gcloud run services describe watsonx-mcp --region us-central1 --format 'value(status.url)'
 ```
 
-**Особенности Cloud Run:**
-- Автоматическое масштабирование
-- Оплата за использование
-- HTTPS по умолчанию
+**Cloud Run Features:**
+- Automatic scaling
+- Pay per use
+- HTTPS by default
 
 ### AWS App Runner
 
-1. Опубликуйте образ в Amazon ECR (см. выше)
-2. Откройте [AWS App Runner Console](https://console.aws.amazon.com/apprunner)
-3. Нажмите "Create service"
-4. Выберите "Container registry" → "Amazon ECR"
-5. Выберите ваш образ
-6. Настройки:
+1. Publish image to Amazon ECR (see above)
+2. Open [AWS App Runner Console](https://console.aws.amazon.com/apprunner)
+3. Click "Create service"
+4. Select "Container registry" → "Amazon ECR"
+5. Select your image
+6. Settings:
    - **Port**: 8000
    - **Health check path**: `/health`
-7. Создайте сервис
+7. Create service
 
 ### Azure Container Instances
 
 ```bash
-# Создание группы ресурсов
+# Create resource group
 az group create --name watsonx-mcp-rg --location eastus
 
-# Создание container registry
+# Create container registry
 az acr create --resource-group watsonx-mcp-rg --name watsonxmcpregistry --sku Basic
 
-# Логин в registry
+# Login to registry
 az acr login --name watsonxmcpregistry
 
-# Тегирование
+# Tag
 docker tag watsonx-mcp:latest watsonxmcpregistry.azurecr.io/watsonx-mcp:latest
 
-# Публикация
+# Publish
 docker push watsonxmcpregistry.azurecr.io/watsonx-mcp:latest
 
-# Развертывание
+# Deploy
 az container create \
   --resource-group watsonx-mcp-rg \
   --name watsonx-mcp-container \
@@ -207,7 +207,7 @@ az container create \
   --dns-name-label watsonx-mcp-unique-name \
   --ports 8000
 
-# Получить URL
+# Get URL
 az container show \
   --resource-group watsonx-mcp-rg \
   --name watsonx-mcp-container \
@@ -218,63 +218,63 @@ az container show \
 ### Heroku
 
 ```bash
-# Установка Heroku CLI
+# Install Heroku CLI
 # https://devcenter.heroku.com/articles/heroku-cli
 
-# Логин
+# Login
 heroku login
 heroku container:login
 
-# Создание приложения
+# Create app
 heroku create your-app-name
 
-# Сборка и публикация
+# Build and publish
 heroku container:push web -a your-app-name
 
-# Релиз
+# Release
 heroku container:release web -a your-app-name
 
-# Открыть
+# Open
 heroku open -a your-app-name
 
-# Логи
+# Logs
 heroku logs --tail -a your-app-name
 ```
 
-**Примечание**: Heroku требует процесс `web` на порту из переменной `$PORT`
+**Note**: Heroku requires `web` process on port from `$PORT` variable
 
 ### DigitalOcean App Platform
 
-1. Зайдите в [DigitalOcean App Platform](https://cloud.digitalocean.com/apps)
-2. Нажмите "Create App"
-3. Выберите GitHub репозиторий
-4. DigitalOcean автоматически определит Dockerfile
-5. Настройки:
+1. Go to [DigitalOcean App Platform](https://cloud.digitalocean.com/apps)
+2. Click "Create App"
+3. Select GitHub repository
+4. DigitalOcean will automatically detect Dockerfile
+5. Settings:
    - **Port**: 8000
    - **Health Check Path**: `/health`
-6. Выберите план
-7. Нажмите "Launch App"
+6. Select plan
+7. Click "Launch App"
 
-## 🔧 Продвинутая конфигурация
+## 🔧 Advanced Configuration
 
-### Переменные окружения
+### Environment Variables
 
-Создайте файл `.env`:
+Create `.env` file:
 
 ```env
-# Порт сервера
+# Server port
 PORT=8000
 
-# Путь к данным
+# Data path
 DATA_FILE=/app/data/data.json
 CONFIG_FILE=/app/data/config.json
 
-# Логирование
+# Logging
 LOG_LEVEL=INFO
 PYTHONUNBUFFERED=1
 ```
 
-Используйте в docker-compose.yml:
+Use in docker-compose.yml:
 
 ```yaml
 services:
@@ -283,7 +283,7 @@ services:
       - .env
 ```
 
-### Персистентность данных с именованными volumes
+### Data Persistence with Named Volumes
 
 ```yaml
 volumes:
@@ -295,7 +295,7 @@ volumes:
       device: /path/to/your/data
 ```
 
-### Использование secrets для конфиденциальных данных
+### Using Secrets for Sensitive Data
 
 ```yaml
 services:
@@ -311,7 +311,7 @@ secrets:
     file: ./secrets/api_key.txt
 ```
 
-### Health checks
+### Health Checks
 
 ```yaml
 healthcheck:
@@ -322,7 +322,7 @@ healthcheck:
   start_period: 40s
 ```
 
-### Multi-stage build для меньшего размера
+### Multi-stage Build for Smaller Size
 
 ```dockerfile
 # Stage 1: Build
@@ -343,33 +343,33 @@ ENV PATH=/root/.local/bin:$PATH
 CMD ["python", "http_server.py"]
 ```
 
-## 🔒 Безопасность
+## 🔒 Security
 
-### Запуск от непривилегированного пользователя
+### Run as Non-privileged User
 
-Добавьте в Dockerfile:
+Add to Dockerfile:
 
 ```dockerfile
-# Создаем пользователя
+# Create user
 RUN useradd -m -u 1000 mcpuser && \
     chown -R mcpuser:mcpuser /app
 
 USER mcpuser
 ```
 
-### Сканирование образа на уязвимости
+### Scan Image for Vulnerabilities
 
 ```bash
-# Используя Docker Scout
+# Using Docker Scout
 docker scout cves watsonx-mcp:latest
 
-# Используя Trivy
+# Using Trivy
 trivy image watsonx-mcp:latest
 ```
 
-## 📊 Мониторинг
+## 📊 Monitoring
 
-### Логи
+### Logs
 
 ```bash
 # Docker
@@ -378,17 +378,17 @@ docker logs -f watsonx-mcp
 # Docker Compose
 docker-compose logs -f mcp-http-server
 
-# Экспорт логов в файл
+# Export logs to file
 docker logs watsonx-mcp > logs.txt 2>&1
 ```
 
-### Метрики
+### Metrics
 
 ```bash
-# Статистика контейнера
+# Container statistics
 docker stats watsonx-mcp
 
-# Детальная информация
+# Detailed information
 docker inspect watsonx-mcp
 ```
 
@@ -396,7 +396,7 @@ docker inspect watsonx-mcp
 
 ### GitHub Actions
 
-Создайте `.github/workflows/docker-publish.yml`:
+Create `.github/workflows/docker-publish.yml`:
 
 ```yaml
 name: Docker Build and Publish
@@ -452,70 +452,69 @@ jobs:
 
 ## 🆘 Troubleshooting
 
-### Контейнер не запускается
+### Container Won't Start
 
 ```bash
-# Проверьте логи
+# Check logs
 docker logs watsonx-mcp
 
-# Запустите интерактивно
+# Run interactively
 docker run -it watsonx-mcp:latest /bin/bash
 ```
 
-### Проблемы с permissions
+### Permission Issues
 
 ```bash
-# Проверьте владельца файлов
+# Check file ownership
 docker exec watsonx-mcp ls -la /app
 
-# Измените права
+# Change permissions
 docker exec watsonx-mcp chown -R 1000:1000 /app/data
 ```
 
-### Данные не сохраняются
+### Data Not Persisting
 
 ```bash
-# Проверьте volumes
+# Check volumes
 docker volume ls
 docker volume inspect mcp-data
 
-# Проверьте mount points
+# Check mount points
 docker inspect watsonx-mcp | grep -A 10 Mounts
 ```
 
-## 📚 Полезные команды
+## 📚 Useful Commands
 
 ```bash
-# Удалить все остановленные контейнеры
+# Remove all stopped containers
 docker container prune
 
-# Удалить неиспользуемые образы
+# Remove unused images
 docker image prune -a
 
-# Удалить неиспользуемые volumes
+# Remove unused volumes
 docker volume prune
 
-# Полная очистка
+# Full cleanup
 docker system prune -a --volumes
 
-# Экспорт образа
+# Export image
 docker save watsonx-mcp:latest | gzip > watsonx-mcp.tar.gz
 
-# Импорт образа
+# Import image
 docker load < watsonx-mcp.tar.gz
 
-# Копирование файлов из контейнера
+# Copy files from container
 docker cp watsonx-mcp:/app/data.json ./data.json.backup
 
-# Копирование файлов в контейнер
+# Copy files to container
 docker cp ./config.json watsonx-mcp:/app/config.json
 ```
 
-## 📖 Дополнительные ресурсы
+## 📖 Additional Resources
 
 - [Docker Documentation](https://docs.docker.com/)
 - [Docker Hub](https://hub.docker.com/)
 - [GitHub Container Registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)
 - [Docker Compose Documentation](https://docs.docker.com/compose/)
 - [Best practices for writing Dockerfiles](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
-

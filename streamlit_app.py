@@ -2,26 +2,26 @@ import streamlit as st
 import requests
 import json
 
-# Конфигурация Watson Orchestrate
+# Watson Orchestrate Configuration
 ORCHESTRATE_API_KEY = "9BoWYXsiNAwF1V7ljv8nN5c8lxg7Dq4SFBy-8Axvc2jX"
 ORCHESTRATE_URL = "https://api.us-south.watson-orchestrate.cloud.ibm.com/instances/21192705-1d5a-4bfe-b8f5-11699516e970"
 
-st.set_page_config(page_title="HR Агент", page_icon="🤖", layout="centered")
+st.set_page_config(page_title="HR Agent", page_icon="🤖", layout="centered")
 
-# Заголовок
-st.title("🤖 HR Агент")
-st.markdown("Задайте любой вопрос HR агенту")
+# Header
+st.title("🤖 HR Agent")
+st.markdown("Ask any question to the HR agent")
 
-# Инициализация истории чата
+# Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Отображение истории чата
+# Display chat history
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# Функция для отправки запроса в Watson Orchestrate
+# Function to send request to Watson Orchestrate
 def send_to_orchestrate(user_message):
     headers = {
         "Authorization": f"Bearer {ORCHESTRATE_API_KEY}",
@@ -44,57 +44,57 @@ def send_to_orchestrate(user_message):
         
         if response.status_code == 200:
             result = response.json()
-            return result.get("output", {}).get("text", "Извините, не получил ответ")
+            return result.get("output", {}).get("text", "Sorry, no response received")
         else:
-            return f"Ошибка API: {response.status_code} - {response.text}"
+            return f"API Error: {response.status_code} - {response.text}"
     
     except Exception as e:
-        return f"Ошибка соединения: {str(e)}"
+        return f"Connection Error: {str(e)}"
 
-# Поле ввода сообщения
-if prompt := st.chat_input("Напишите ваш вопрос..."):
-    # Добавляем сообщение пользователя в историю
+# Message input field
+if prompt := st.chat_input("Write your question..."):
+    # Add user message to history
     st.session_state.messages.append({"role": "user", "content": prompt})
     
-    # Отображаем сообщение пользователя
+    # Display user message
     with st.chat_message("user"):
         st.markdown(prompt)
     
-    # Получаем ответ от Watson Orchestrate
+    # Get response from Watson Orchestrate
     with st.chat_message("assistant"):
-        with st.spinner("Думаю..."):
+        with st.spinner("Thinking..."):
             response = send_to_orchestrate(prompt)
             st.markdown(response)
     
-    # Добавляем ответ ассистента в историю
+    # Add assistant response to history
     st.session_state.messages.append({"role": "assistant", "content": response})
 
-# Кнопка очистки чата в сайдбаре
+# Clear chat button in sidebar
 with st.sidebar:
-    st.header("⚙️ Настройки")
+    st.header("⚙️ Settings")
     
-    if st.button("🗑️ Очистить чат", use_container_width=True):
+    if st.button("🗑️ Clear Chat", use_container_width=True):
         st.session_state.messages = []
         st.rerun()
     
     st.divider()
     
     st.markdown("""
-    ### 📝 Информация
+    ### 📝 Information
     
-    **Подключено к:**
+    **Connected to:**
     - IBM Watson Orchestrate
-    - Инстанс: watsonx-Hackathon
+    - Instance: watsonx-Hackathon
     
-    **Примеры вопросов:**
-    - Какие документы нужны для найма?
-    - Как проходит онбординг?
-    - Какой график отпусков?
+    **Example questions:**
+    - What documents are needed for hiring?
+    - How does onboarding work?
+    - What is the vacation schedule?
     """)
     
-    # Показываем количество сообщений
-    st.caption(f"💬 Сообщений в чате: {len(st.session_state.messages)}")
+    # Show message count
+    st.caption(f"💬 Messages in chat: {len(st.session_state.messages)}")
 
-# Футер
+# Footer
 st.divider()
-st.caption("🤖 HR Агент | Powered by IBM Watson Orchestrate")
+st.caption("🤖 HR Agent | Powered by IBM Watson Orchestrate")

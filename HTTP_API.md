@@ -1,58 +1,58 @@
-# HTTP API для Onboarding Checklist
+# HTTP API for Onboarding Checklist
 
-FastAPI версия сервера для работы через HTTP запросы. Можно использовать с nginx, curl, или любым HTTP клиентом.
+FastAPI version of the server for working via HTTP requests. Can be used with nginx, curl, or any HTTP client.
 
-## Запуск сервера
+## Starting the Server
 
-### Установка зависимостей
+### Installing Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Запуск на порту 8000
+### Running on Port 8000
 
 ```bash
 python http_server.py
 ```
 
-Или через uvicorn:
+Or via uvicorn:
 
 ```bash
 uvicorn http_server:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-Сервер будет доступен на: `http://localhost:8000`
+Server will be available at: `http://localhost:8000`
 
 ## API Endpoints
 
-### 1. Корневой endpoint
+### 1. Root Endpoint
 
 ```bash
 GET /
 ```
 
-Возвращает информацию об API и список доступных endpoints.
+Returns API information and list of available endpoints.
 
-**Пример:**
+**Example:**
 ```bash
 curl http://localhost:8000/
 ```
 
-### 2. Получить чек-лист
+### 2. Get Checklist
 
 ```bash
 GET /api/checklist
 ```
 
-Возвращает полный чек-лист онбординга, сгруппированный по дням.
+Returns full onboarding checklist, grouped by days.
 
-**Пример:**
+**Example:**
 ```bash
 curl http://localhost:8000/api/checklist
 ```
 
-**Ответ:**
+**Response:**
 ```json
 {
   "checklist": {
@@ -69,23 +69,23 @@ curl http://localhost:8000/api/checklist
 }
 ```
 
-### 3. Получить прогресс пользователя
+### 3. Get User Progress
 
 ```bash
 GET /api/users/{email}/progress
 ```
 
-Получает прогресс конкретного пользователя по email. Если пользователя нет - создается автоматически.
+Gets progress for specific user by email. If user doesn't exist - created automatically.
 
-**Параметры:**
-- `email` (path) - Email пользователя
+**Parameters:**
+- `email` (path) - User's email
 
-**Пример:**
+**Example:**
 ```bash
 curl http://localhost:8000/api/users/john.doe@company.com/progress
 ```
 
-**Ответ:**
+**Response:**
 ```json
 {
   "email": "john.doe@company.com",
@@ -107,15 +107,15 @@ curl http://localhost:8000/api/users/john.doe@company.com/progress
 }
 ```
 
-### 4. Отметить задачу как выполненную
+### 4. Mark Task as Completed
 
 ```bash
 POST /api/users/tasks/complete
 ```
 
-Отмечает задачу как выполненную для пользователя.
+Marks a task as completed for user.
 
-**Тело запроса (JSON):**
+**Request Body (JSON):**
 ```json
 {
   "email": "john.doe@company.com",
@@ -123,14 +123,14 @@ POST /api/users/tasks/complete
 }
 ```
 
-**Пример с curl:**
+**Example with curl:**
 ```bash
 curl -X POST http://localhost:8000/api/users/tasks/complete \
   -H "Content-Type: application/json" \
   -d '{"email": "john.doe@company.com", "task_id": 1}'
 ```
 
-**Ответ:**
+**Response:**
 ```json
 {
   "success": true,
@@ -143,29 +143,29 @@ curl -X POST http://localhost:8000/api/users/tasks/complete \
 }
 ```
 
-### 5. Получить прогресс всех пользователей (только для менторов)
+### 5. Get All Users' Progress (Mentors Only)
 
 ```bash
 POST /api/admin/users
 ```
 
-Возвращает прогресс всех пользователей. Доступно только менторам из `config.json`.
+Returns progress for all users. Only available to mentors from `config.json`.
 
-**Тело запроса (JSON):**
+**Request Body (JSON):**
 ```json
 {
   "mentor_email": "mentor@company.com"
 }
 ```
 
-**Пример с curl:**
+**Example with curl:**
 ```bash
 curl -X POST http://localhost:8000/api/admin/users \
   -H "Content-Type: application/json" \
   -d '{"mentor_email": "mentor@company.com"}'
 ```
 
-**Ответ:**
+**Response:**
 ```json
 {
   "users": {
@@ -190,7 +190,7 @@ curl -X POST http://localhost:8000/api/admin/users \
 }
 ```
 
-**Ошибка доступа (403):**
+**Access Denied Error (403):**
 ```json
 {
   "detail": "Access denied. user@company.com is not authorized as a mentor."
@@ -203,14 +203,14 @@ curl -X POST http://localhost:8000/api/admin/users \
 GET /health
 ```
 
-Проверка работоспособности сервера.
+Server health check.
 
-**Пример:**
+**Example:**
 ```bash
 curl http://localhost:8000/health
 ```
 
-**Ответ:**
+**Response:**
 ```json
 {
   "status": "healthy",
@@ -218,25 +218,25 @@ curl http://localhost:8000/health
 }
 ```
 
-## Автоматическая документация
+## Automatic Documentation
 
-FastAPI автоматически генерирует интерактивную документацию:
+FastAPI automatically generates interactive documentation:
 
 - **Swagger UI:** http://localhost:8000/docs
 - **ReDoc:** http://localhost:8000/redoc
 
-Там можно тестировать все endpoints прямо из браузера!
+You can test all endpoints directly from the browser!
 
-## Настройка Nginx
+## Nginx Configuration
 
-### Конфигурация nginx
+### Nginx Config
 
-Создайте файл `/etc/nginx/sites-available/onboarding-api`:
+Create file `/etc/nginx/sites-available/onboarding-api`:
 
 ```nginx
 server {
     listen 80;
-    server_name your-domain.com;  # Замените на ваш домен
+    server_name your-domain.com;  # Replace with your domain
 
     location / {
         proxy_pass http://localhost:8000;
@@ -252,7 +252,7 @@ server {
 }
 ```
 
-### Включение конфигурации
+### Enable Configuration
 
 ```bash
 sudo ln -s /etc/nginx/sites-available/onboarding-api /etc/nginx/sites-enabled/
@@ -260,7 +260,7 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-### С SSL (Let's Encrypt)
+### With SSL (Let's Encrypt)
 
 ```nginx
 server {
@@ -290,11 +290,11 @@ server {
 }
 ```
 
-## Запуск в production
+## Running in Production
 
-### С systemd
+### With systemd
 
-Создайте файл `/etc/systemd/system/onboarding-api.service`:
+Create file `/etc/systemd/system/onboarding-api.service`:
 
 ```ini
 [Unit]
@@ -313,7 +313,7 @@ Restart=always
 WantedBy=multi-user.target
 ```
 
-Запуск:
+Start:
 
 ```bash
 sudo systemctl daemon-reload
@@ -322,7 +322,7 @@ sudo systemctl start onboarding-api
 sudo systemctl status onboarding-api
 ```
 
-### С gunicorn (для production)
+### With gunicorn (for production)
 
 ```bash
 pip install gunicorn
@@ -337,32 +337,32 @@ gunicorn http_server:app \
 
 ## CORS
 
-По умолчанию CORS настроен на `allow_origins=["*"]` для разработки. 
+By default CORS is configured as `allow_origins=["*"]` for development. 
 
-**В production** измените в `http_server.py`:
+**In production** change in `http_server.py`:
 
 ```python
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://your-frontend.com"],  # Конкретные домены
+    allow_origins=["https://your-frontend.com"],  # Specific domains
     allow_credentials=True,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 ```
 
-## Примеры использования
+## Usage Examples
 
-### Python с requests
+### Python with requests
 
 ```python
 import requests
 
-# Получить прогресс
+# Get progress
 response = requests.get("http://localhost:8000/api/users/john@company.com/progress")
 print(response.json())
 
-# Отметить задачу
+# Mark task
 response = requests.post(
     "http://localhost:8000/api/users/tasks/complete",
     json={"email": "john@company.com", "task_id": 1}
@@ -373,12 +373,12 @@ print(response.json())
 ### JavaScript (fetch)
 
 ```javascript
-// Получить прогресс
+// Get progress
 const response = await fetch('http://localhost:8000/api/users/john@company.com/progress');
 const data = await response.json();
 console.log(data);
 
-// Отметить задачу
+// Mark task
 const response = await fetch('http://localhost:8000/api/users/tasks/complete', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
@@ -388,7 +388,7 @@ const data = await response.json();
 console.log(data);
 ```
 
-### curl скрипт для тестирования
+### curl script for testing
 
 ```bash
 #!/bin/bash
@@ -396,69 +396,68 @@ console.log(data);
 BASE_URL="http://localhost:8000"
 EMAIL="test@company.com"
 
-echo "=== Получаем чек-лист ==="
+echo "=== Get checklist ==="
 curl -s "$BASE_URL/api/checklist" | jq
 
-echo -e "\n=== Получаем прогресс пользователя ==="
+echo -e "\n=== Get user progress ==="
 curl -s "$BASE_URL/api/users/$EMAIL/progress" | jq
 
-echo -e "\n=== Отмечаем задачу 1 ==="
+echo -e "\n=== Mark task 1 ==="
 curl -s -X POST "$BASE_URL/api/users/tasks/complete" \
   -H "Content-Type: application/json" \
   -d "{\"email\": \"$EMAIL\", \"task_id\": 1}" | jq
 
-echo -e "\n=== Проверяем обновленный прогресс ==="
+echo -e "\n=== Check updated progress ==="
 curl -s "$BASE_URL/api/users/$EMAIL/progress" | jq
 ```
 
-## Мониторинг
+## Monitoring
 
-### Логирование
+### Logging
 
-Uvicorn автоматически логирует все запросы в stdout. Для сохранения в файл:
+Uvicorn automatically logs all requests to stdout. To save to file:
 
 ```bash
 uvicorn http_server:app --host 0.0.0.0 --port 8000 \
   --log-file /var/log/onboarding-api.log
 ```
 
-### Health check с curl
+### Health check with curl
 
 ```bash
 curl http://localhost:8000/health
 ```
 
-Используйте этот endpoint для мониторинга с помощью Nagios, Zabbix, или подобных инструментов.
+Use this endpoint for monitoring with Nagios, Zabbix, or similar tools.
 
-## Безопасность
+## Security
 
-### Рекомендации для production:
+### Production Recommendations:
 
-1. **Используйте HTTPS** (SSL/TLS)
-2. **Ограничьте CORS** конкретными доменами
-3. **Добавьте аутентификацию** (JWT, OAuth)
-4. **Rate limiting** для защиты от DDoS
-5. **Валидация входных данных** (уже реализована через Pydantic)
-6. **Файрвол** - открыть только нужные порты
+1. **Use HTTPS** (SSL/TLS)
+2. **Restrict CORS** to specific domains
+3. **Add authentication** (JWT, OAuth)
+4. **Rate limiting** for DDoS protection
+5. **Input validation** (already implemented via Pydantic)
+6. **Firewall** - open only necessary ports
 
-### Пример с JWT (опционально)
+### Example with JWT (optional)
 
 ```bash
 pip install python-jose[cryptography] passlib[bcrypt]
 ```
 
-Добавьте middleware для проверки токенов в `http_server.py`.
+Add middleware for token verification in `http_server.py`.
 
-## Отличия от MCP версии
+## Differences from MCP Version
 
-| Особенность | MCP (server.py) | HTTP API (http_server.py) |
-|-------------|-----------------|---------------------------|
-| Протокол | stdio (stdin/stdout) | HTTP REST API |
-| Использование | Claude Desktop, MCP клиенты | Любой HTTP клиент |
-| Порт | Нет | 8000 (по умолчанию) |
-| Документация | Нет | Swagger UI (/docs) |
-| CORS | Не применимо | Да |
-| nginx | Не нужен | Можно использовать |
+| Feature | MCP (server.py) | HTTP API (http_server.py) |
+|---------|----------------|---------------------------|
+| Protocol | stdio (stdin/stdout) | HTTP REST API |
+| Usage | Claude Desktop, MCP clients | Any HTTP client |
+| Port | None | 8000 (default) |
+| Documentation | None | Swagger UI (/docs) |
+| CORS | Not applicable | Yes |
+| nginx | Not needed | Can be used |
 
-Обе версии используют одинаковые файлы данных (`data.json`, `config.json`), поэтому можно использовать их параллельно!
-
+Both versions use the same data files (`data.json`, `config.json`), so you can use them in parallel!

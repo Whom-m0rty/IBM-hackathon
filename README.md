@@ -1,6 +1,6 @@
 # MCP Onboarding Checklist Server
 
-Сервер для управления чек-листом онбординга сотрудников. Позволяет отслеживать прогресс новых сотрудников по стандартному чек-листу онбординга для позиции "Junior Software Engineer".
+A server for managing employee onboarding checklist. Allows tracking progress of new employees through a standard onboarding checklist for the "Junior Software Engineer" position.
 
 ## 🚀 Quick Deploy
 
@@ -13,76 +13,76 @@
 
 **Live Demo:** API running at ngrok URL with Swagger docs at `/docs`
 
-## 🚀 Две версии сервера
+## 🚀 Two Server Versions
 
-Проект содержит **две версии** сервера с одинаковым функционалом:
+The project contains **two versions** of the server with identical functionality:
 
 ### 1. MCP Server (`server.py`)
-- Работает через протокол MCP (stdio)
-- Для использования с Claude Desktop и MCP клиентами
-- **Документация:** см. ниже в этом файле
+- Works via MCP protocol (stdio)
+- For use with Claude Desktop and MCP clients
+- **Documentation:** see below in this file
 
 ### 2. HTTP API Server (`http_server.py`)
-- Работает через HTTP REST API (FastAPI)
-- Можно использовать с nginx, curl, браузером
-- Порт: 8000 (по умолчанию)
-- **Подробная документация:** [HTTP_API.md](HTTP_API.md)
+- Works via HTTP REST API (FastAPI)
+- Can be used with nginx, curl, browser
+- Port: 8000 (default)
+- **Detailed documentation:** [HTTP_API.md](HTTP_API.md)
 - **Swagger UI:** http://localhost:8000/docs
 
-**Обе версии используют одни и те же файлы данных (`data.json`, `config.json`)!**
+**Both versions use the same data files (`data.json`, `config.json`)!**
 
-## Возможности
+## Features
 
-- ✅ Получение прогресса пользователя по email
-- ✅ Отметка выполненных задач
-- ✅ Автоматическое создание новых пользователей
-- ✅ Доступ менторов к прогрессу всех пользователей
-- ✅ Хранение данных в JSON
-- ✅ Чек-лист из 9 задач на 3 дня
+- ✅ Get user progress by email
+- ✅ Mark completed tasks
+- ✅ Automatic creation of new users
+- ✅ Mentor access to all users' progress
+- ✅ Data storage in JSON
+- ✅ Checklist of 9 tasks over 3 days
 
-## Быстрый старт
+## Quick Start
 
-### 🎯 Выбор версии
+### 🎯 Version Selection
 
-**Простая версия (рекомендуется):**
-- Используйте `agent_prompt_simple.txt` для watsonx
-- Лучше слушается агентами
-- Чистое форматирование
-- См. [SIMPLE_SETUP.md](SIMPLE_SETUP.md) и [CHEATSHEET.md](CHEATSHEET.md)
+**Simple version (recommended):**
+- Use `agent_prompt_simple.txt` for watsonx
+- Better compliance with agents
+- Clean formatting
+- See [SIMPLE_SETUP.md](SIMPLE_SETUP.md) and [CHEATSHEET.md](CHEATSHEET.md)
 
-**Расширенная версия (опциональная):**
-- Используйте `FORMATTING_EXAMPLES.md` для красивого форматирования
-- Больше эмодзи и визуальных элементов
-- Может не всегда работать с агентами
+**Extended version (optional):**
+- Use `FORMATTING_EXAMPLES.md` for beautiful formatting
+- More emojis and visual elements
+- May not always work with agents
 
-### HTTP API версия (рекомендуется для веб-интеграции)
+### HTTP API version (recommended for web integration)
 
 ```bash
-# Установка
+# Installation
 pip install -r requirements.txt
 
-# Запуск
+# Run
 python http_server.py
 
-# Сервер доступен на http://localhost:8000
-# Документация: http://localhost:8000/docs
+# Server available at http://localhost:8000
+# Documentation: http://localhost:8000/docs
 ```
 
-См. [HTTP_API.md](HTTP_API.md) для примеров с curl, nginx, и прочего.
+See [HTTP_API.md](HTTP_API.md) for examples with curl, nginx, etc.
 
-### MCP версия (для Claude Desktop)
+### MCP version (for Claude Desktop)
 
 ```bash
-# Установка
+# Installation
 pip install -r requirements.txt
 
-# Запуск
+# Run
 python server.py
 ```
 
-См. инструкции ниже для настройки с Claude Desktop.
+See instructions below for setup with Claude Desktop.
 
-## Структура чек-листа
+## Checklist Structure
 
 ### Day 1
 1. Meet your manager
@@ -101,21 +101,21 @@ python server.py
 
 ---
 
-# MCP Server (stdio версия)
+# MCP Server (stdio version)
 
-Далее описана настройка **MCP версии** для работы с Claude Desktop. Для HTTP API см. [HTTP_API.md](HTTP_API.md).
+Below describes the setup of the **MCP version** for working with Claude Desktop. For HTTP API see [HTTP_API.md](HTTP_API.md).
 
-## Установка
+## Installation
 
-### 1. Установите зависимости
+### 1. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Настройте список менторов
+### 2. Configure mentor list
 
-Отредактируйте файл `config.json` и добавьте email адреса менторов:
+Edit the `config.json` file and add mentor email addresses:
 
 ```json
 {
@@ -126,17 +126,17 @@ pip install -r requirements.txt
 }
 ```
 
-## Запуск MCP сервера
+## Running MCP Server
 
-### Напрямую через Python
+### Directly via Python
 
 ```bash
 python server.py
 ```
 
-### Подключение к Claude Desktop (MCP)
+### Connecting to Claude Desktop (MCP)
 
-Добавьте следующую конфигурацию в файл конфигурации Claude Desktop:
+Add the following configuration to the Claude Desktop configuration file:
 
 **MacOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
 
@@ -153,78 +153,78 @@ python server.py
 }
 ```
 
-Замените путь `/Users/whom/Documents/watsonxMCP/server.py` на полный путь к вашему файлу server.py.
+Replace the path `/Users/whom/Documents/watsonxMCP/server.py` with the full path to your server.py file.
 
-После добавления конфигурации перезапустите Claude Desktop.
+After adding the configuration, restart Claude Desktop.
 
-## Доступные инструменты (MCP Tools)
+## Available Tools (MCP Tools)
 
 ### 1. get_user_progress
 
-Получает прогресс пользователя по чек-листу.
+Gets user progress on the checklist.
 
-**Параметры:**
-- `email` (string) - Email адрес пользователя
+**Parameters:**
+- `email` (string) - User's email address
 
-**Поведение:**
-- Если пользователя нет в базе, автоматически создается новый с нулевым прогрессом
-- Возвращает отформатированный прогресс по всем задачам
+**Behavior:**
+- If user is not in database, automatically creates new one with zero progress
+- Returns formatted progress for all tasks
 
-**Пример использования в промпте:**
+**Example usage in prompt:**
 ```
-Покажи мой прогресс онбординга для user@company.com
+Show my onboarding progress for user@company.com
 ```
 
 ### 2. mark_task_complete
 
-Отмечает задачу как выполненную для конкретного пользователя.
+Marks a task as completed for a specific user.
 
-**Параметры:**
-- `email` (string) - Email адрес пользователя
-- `task_id` (integer, 1-9) - ID задачи для отметки
+**Parameters:**
+- `email` (string) - User's email address
+- `task_id` (integer, 1-9) - Task ID to mark
 
-**Поведение:**
-- Валидирует task_id (должен быть от 1 до 9)
-- Если пользователя нет, создает нового
-- Если задача уже выполнена, возвращает соответствующее сообщение
-- Обновляет timestamp последнего изменения
+**Behavior:**
+- Validates task_id (must be from 1 to 9)
+- If user doesn't exist, creates new one
+- If task is already completed, returns appropriate message
+- Updates last modified timestamp
 
-**Пример использования в промпте:**
+**Example usage in prompt:**
 ```
-Отметь задачу 1 как выполненную для user@company.com
+Mark task 1 as completed for user@company.com
 ```
 
 ### 3. get_all_users_progress
 
-Получает прогресс всех пользователей. Доступно только менторам.
+Gets progress for all users. Only available to mentors.
 
-**Параметры:**
-- `mentor_email` (string) - Email адрес ментора
+**Parameters:**
+- `mentor_email` (string) - Mentor's email address
 
-**Поведение:**
-- Проверяет, что email есть в списке менторов из `config.json`
-- Если email не ментора, возвращает ошибку доступа
-- Возвращает сводку по всем пользователям с процентом выполнения
+**Behavior:**
+- Checks that email is in the mentor list from `config.json`
+- If email is not a mentor, returns access error
+- Returns summary for all users with completion percentage
 
-**Пример использования в промпте:**
+**Example usage in prompt:**
 ```
-Покажи прогресс всех сотрудников (mentor@company.com)
+Show progress for all employees (mentor@company.com)
 ```
 
-## Использование с агентом
+## Using with Agent
 
-Используйте промпт из файла `agent_prompt.txt` для настройки вашего AI агента. Этот промпт:
+Use the prompt from the `agent_prompt.txt` file to configure your AI agent. This prompt:
 
-- Инструктирует агента всегда запрашивать email пользователя
-- Объясняет, как использовать доступные MCP инструменты
-- Содержит примеры взаимодействия с пользователями
-- Определяет логику работы с чек-листом
+- Instructs the agent to always request user's email
+- Explains how to use available MCP tools
+- Contains examples of interactions with users
+- Defines logic for working with checklist
 
-## Структура данных
+## Data Structure
 
 ### data.json
 
-Хранит прогресс всех пользователей:
+Stores progress for all users:
 
 ```json
 {
@@ -243,7 +243,7 @@ python server.py
 
 ### config.json
 
-Список email адресов менторов, имеющих доступ к данным всех пользователей:
+List of mentor email addresses with access to all users' data:
 
 ```json
 {
@@ -254,76 +254,76 @@ python server.py
 }
 ```
 
-## Примеры сценариев использования
+## Usage Scenarios
 
-### Сценарий 1: Новый сотрудник начинает онбординг
+### Scenario 1: New employee starts onboarding
 
-1. Сотрудник пишет: "Покажи мой чек-лист онбординга"
-2. Агент запрашивает email
-3. Сотрудник предоставляет: john.doe@company.com
-4. Агент вызывает `get_user_progress` → создается новый пользователь
-5. Агент показывает полный чек-лист с отметкой, что ничего не выполнено
+1. Employee writes: "Show me my onboarding checklist"
+2. Agent requests email
+3. Employee provides: john.doe@company.com
+4. Agent calls `get_user_progress` → new user is created
+5. Agent shows full checklist with indication that nothing is completed
 
-### Сценарий 2: Сотрудник выполняет задачи
+### Scenario 2: Employee completes tasks
 
-1. Сотрудник: "Я встретился с менеджером! (john.doe@company.com)"
-2. Агент вызывает `mark_task_complete` с task_id=1
-3. Агент подтверждает и показывает обновленный прогресс
+1. Employee: "I met with the manager! (john.doe@company.com)"
+2. Agent calls `mark_task_complete` with task_id=1
+3. Agent confirms and shows updated progress
 
-### Сценарий 3: Ментор проверяет всех
+### Scenario 3: Mentor checks everyone
 
-1. Ментор: "Покажи прогресс всех сотрудников (mentor@company.com)"
-2. Агент вызывает `get_all_users_progress`
-3. Агент показывает сводную таблицу по всем пользователям
+1. Mentor: "Show progress for all employees (mentor@company.com)"
+2. Agent calls `get_all_users_progress`
+3. Agent shows summary table for all users
 
-### Сценарий 4: Несанкционированный доступ
+### Scenario 4: Unauthorized access
 
-1. Обычный пользователь пытается: "Покажи всех пользователей (user@company.com)"
-2. Агент вызывает `get_all_users_progress`
-3. Сервер возвращает ошибку: "Access denied"
-4. Агент вежливо объясняет, что доступ только для менторов
+1. Regular user tries: "Show all users (user@company.com)"
+2. Agent calls `get_all_users_progress`
+3. Server returns error: "Access denied"
+4. Agent politely explains that access is only for mentors
 
-## Разработка и отладка
+## Development and Debugging
 
-### Тестирование инструментов
+### Testing tools
 
-Вы можете тестировать MCP инструменты напрямую через MCP inspector или через Claude Desktop.
+You can test MCP tools directly through MCP inspector or through Claude Desktop.
 
-### Логи
+### Logs
 
-Сервер работает через stdio, все взаимодействия происходят через стандартные потоки ввода/вывода.
+Server works via stdio, all interactions happen through standard input/output streams.
 
-### Резервное копирование
+### Backup
 
-Рекомендуется регулярно делать резервные копии файла `data.json`:
+Recommended to regularly back up the `data.json` file:
 
 ```bash
 cp data.json data.json.backup
 ```
 
-## Требования
+## Requirements
 
 - Python 3.8+
 - mcp >= 0.9.0
 
-## Лицензия
+## License
 
 MIT
 
-## Поддержка
+## Support
 
-При возникновении проблем:
+If problems occur:
 
-1. Проверьте, что все зависимости установлены
-2. Убедитесь, что файлы `data.json` и `config.json` существуют
-3. Проверьте права доступа к файлам
-4. Убедитесь, что путь к server.py в конфигурации MCP указан правильно
+1. Check that all dependencies are installed
+2. Make sure files `data.json` and `config.json` exist
+3. Check file permissions
+4. Make sure the path to server.py in MCP configuration is correct
 
-## Расширение функционала
+## Extending Functionality
 
-### Добавление новых менторов
+### Adding new mentors
 
-Просто добавьте email в `config.json`:
+Simply add email to `config.json`:
 
 ```json
 {
@@ -335,9 +335,8 @@ MIT
 }
 ```
 
-### Изменение чек-листа
+### Modifying checklist
 
-Чек-лист жестко закодирован в `server.py` в переменной `CHECKLIST`. Для изменения отредактируйте эту переменную и перезапустите сервер.
+Checklist is hardcoded in `server.py` in the `CHECKLIST` variable. To modify, edit this variable and restart the server.
 
-**Примечание:** При изменении количества задач убедитесь, что обновили валидацию task_id в функции `mark_task_complete`.
-
+**Note:** When changing the number of tasks, make sure to update task_id validation in the `mark_task_complete` function.

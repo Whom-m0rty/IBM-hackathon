@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-MCP Server для управления чек-листом онбординга сотрудников.
+MCP Server for managing employee onboarding checklist.
 """
 
 import json
@@ -11,11 +11,11 @@ from mcp.server import Server
 from mcp.types import Tool, TextContent
 import mcp.server.stdio
 
-# Константы
+# Constants
 DATA_FILE = "data.json"
 CONFIG_FILE = "config.json"
 
-# Определение чек-листа онбординга
+# Onboarding checklist definition
 CHECKLIST = {
     1: {"day": 1, "task": "Meet your manager"},
     2: {"day": 1, "task": "Meet your buddy / mentor"},
@@ -30,7 +30,7 @@ CHECKLIST = {
 
 
 def load_json_file(filepath: str) -> dict:
-    """Загружает данные из JSON файла."""
+    """Loads data from JSON file."""
     if not os.path.exists(filepath):
         return {}
     try:
@@ -41,28 +41,28 @@ def load_json_file(filepath: str) -> dict:
 
 
 def save_json_file(filepath: str, data: dict) -> None:
-    """Сохраняет данные в JSON файл."""
+    """Saves data to JSON file."""
     with open(filepath, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 
 def load_user_data() -> dict:
-    """Загружает данные пользователей."""
+    """Loads user data."""
     return load_json_file(DATA_FILE)
 
 
 def save_user_data(data: dict) -> None:
-    """Сохраняет данные пользователей."""
+    """Saves user data."""
     save_json_file(DATA_FILE, data)
 
 
 def load_config() -> dict:
-    """Загружает конфигурацию."""
+    """Loads configuration."""
     return load_json_file(CONFIG_FILE)
 
 
 def create_new_user(email: str) -> dict:
-    """Создает нового пользователя с пустым прогрессом."""
+    """Creates a new user with empty progress."""
     now = datetime.now().isoformat()
     return {
         "completed_tasks": [],
@@ -72,7 +72,7 @@ def create_new_user(email: str) -> dict:
 
 
 def get_user(email: str, data: dict) -> dict:
-    """Получает данные пользователя или создает нового."""
+    """Gets user data or creates a new one."""
     if email not in data:
         data[email] = create_new_user(email)
         save_user_data(data)
@@ -80,7 +80,7 @@ def get_user(email: str, data: dict) -> dict:
 
 
 def format_progress(email: str, user_data: dict) -> str:
-    """Форматирует прогресс пользователя в читаемый вид."""
+    """Formats user progress in readable format."""
     completed = set(user_data["completed_tasks"])
     
     result = [f"Onboarding Progress for: {email}"]
@@ -104,7 +104,7 @@ def format_progress(email: str, user_data: dict) -> str:
 
 
 def format_all_users_progress(data: dict) -> str:
-    """Форматирует прогресс всех пользователей."""
+    """Formats progress for all users."""
     if not data:
         return "No users found in the system."
     
@@ -125,13 +125,13 @@ def format_all_users_progress(data: dict) -> str:
     return "\n".join(result)
 
 
-# Создаем MCP сервер
+# Create MCP server
 app = Server("onboarding-checklist")
 
 
 @app.list_tools()
 async def list_tools() -> list[Tool]:
-    """Список доступных инструментов."""
+    """List of available tools."""
     return [
         Tool(
             name="get_user_progress",
@@ -186,7 +186,7 @@ async def list_tools() -> list[Tool]:
 
 @app.call_tool()
 async def call_tool(name: str, arguments: Any) -> list[TextContent]:
-    """Обработка вызовов инструментов."""
+    """Handle tool calls."""
     
     if name == "get_user_progress":
         email = arguments.get("email")
@@ -208,18 +208,18 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
         if task_id is None:
             return [TextContent(type="text", text="Error: task_id is required")]
         
-        # Валидация task_id
+        # Validate task_id
         if task_id not in CHECKLIST:
             return [TextContent(
                 type="text",
                 text=f"Error: Invalid task_id. Must be between 1 and 9."
             )]
         
-        # Загружаем данные
+        # Load data
         data = load_user_data()
         user_data = get_user(email, data)
         
-        # Добавляем задачу если ее еще нет
+        # Add task if not already completed
         if task_id not in user_data["completed_tasks"]:
             user_data["completed_tasks"].append(task_id)
             user_data["completed_tasks"].sort()
@@ -229,7 +229,7 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
         else:
             message = f"Task {task_id} was already completed for {email}"
         
-        # Возвращаем обновленный прогресс
+        # Return updated progress
         progress = format_progress(email, user_data)
         return [TextContent(type="text", text=f"{message}\n\n{progress}")]
     
@@ -238,7 +238,7 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
         if not mentor_email:
             return [TextContent(type="text", text="Error: mentor_email is required")]
         
-        # Проверяем, является ли email ментором
+        # Check if email is a mentor
         config = load_config()
         mentors = config.get("mentors", [])
         
@@ -248,7 +248,7 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
                 text=f"Error: Access denied. {mentor_email} is not authorized as a mentor."
             )]
         
-        # Загружаем и форматируем данные всех пользователей
+        # Load and format all users data
         data = load_user_data()
         all_progress = format_all_users_progress(data)
         
@@ -259,7 +259,7 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
 
 
 async def main():
-    """Запуск MCP сервера."""
+    """Start MCP server."""
     async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
         await app.run(
             read_stream,

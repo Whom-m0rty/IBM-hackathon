@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-HTTP API Server для управления чек-листом онбординга сотрудников.
-FastAPI версия для работы через HTTP запросы.
+HTTP API Server for managing employee onboarding checklist.
+FastAPI version for HTTP requests.
 """
 
 import json
@@ -12,11 +12,11 @@ from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 
-# Константы
+# Constants
 DATA_FILE = "data.json"
 CONFIG_FILE = "config.json"
 
-# Определение чек-листа онбординга
+# Onboarding checklist definition
 CHECKLIST = {
     1: {"day": 1, "task": "Meet your manager"},
     2: {"day": 1, "task": "Meet your buddy / mentor"},
@@ -30,7 +30,7 @@ CHECKLIST = {
 }
 
 
-# Pydantic модели для валидации запросов/ответов
+# Pydantic models for request/response validation
 class UserProgress(BaseModel):
     email: str
     completed_tasks: List[int]
@@ -71,9 +71,9 @@ class DetailedProgress(BaseModel):
     tasks_by_day: dict
 
 
-# Функции работы с данными (из оригинального server.py)
+# Data handling functions (from original server.py)
 def load_json_file(filepath: str) -> dict:
-    """Загружает данные из JSON файла."""
+    """Loads data from JSON file."""
     if not os.path.exists(filepath):
         return {}
     try:
@@ -84,28 +84,28 @@ def load_json_file(filepath: str) -> dict:
 
 
 def save_json_file(filepath: str, data: dict) -> None:
-    """Сохраняет данные в JSON файл."""
+    """Saves data to JSON file."""
     with open(filepath, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 
 def load_user_data() -> dict:
-    """Загружает данные пользователей."""
+    """Loads user data."""
     return load_json_file(DATA_FILE)
 
 
 def save_user_data(data: dict) -> None:
-    """Сохраняет данные пользователей."""
+    """Saves user data."""
     save_json_file(DATA_FILE, data)
 
 
 def load_config() -> dict:
-    """Загружает конфигурацию."""
+    """Loads configuration."""
     return load_json_file(CONFIG_FILE)
 
 
 def create_new_user(email: str) -> dict:
-    """Создает нового пользователя с пустым прогрессом."""
+    """Creates a new user with empty progress."""
     now = datetime.now().isoformat()
     return {
         "completed_tasks": [],
@@ -115,24 +115,24 @@ def create_new_user(email: str) -> dict:
 
 
 def get_user(email: str, data: dict) -> dict:
-    """Получает данные пользователя или создает нового."""
+    """Gets user data or creates a new one."""
     if email not in data:
         data[email] = create_new_user(email)
         save_user_data(data)
     return data[email]
 
 
-# Создаем FastAPI приложение
+# Create FastAPI application
 app = FastAPI(
     title="Onboarding Checklist API",
-    description="API для управления чек-листом онбординга сотрудников",
+    description="API for managing employee onboarding checklist",
     version="1.0.0"
 )
 
-# Добавляем CORS для возможности запросов из браузера
+# Add CORS for browser requests
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # В продакшене указать конкретные домены
+    allow_origins=["*"],  # In production, specify exact domains
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -141,7 +141,7 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
-    """Корневой endpoint с информацией об API."""
+    """Root endpoint with API information."""
     return {
         "message": "Onboarding Checklist API",
         "version": "1.0.0",
@@ -156,7 +156,7 @@ async def root():
 
 @app.get("/api/checklist")
 async def get_checklist():
-    """Получить полный чек-лист онбординга."""
+    """Get full onboarding checklist."""
     checklist_by_day = {}
     for task_id, info in CHECKLIST.items():
         day = info["day"]
@@ -177,8 +177,8 @@ async def get_checklist():
 @app.get("/api/users/{email}/progress", response_model=DetailedProgress)
 async def get_user_progress(email: str):
     """
-    Получить прогресс пользователя по чек-листу.
-    Если пользователя нет - создается автоматически с нулевым прогрессом.
+    Get user progress for checklist.
+    If user doesn't exist - created automatically with zero progress.
     """
     data = load_user_data()
     user_data = get_user(email, data)
@@ -187,7 +187,7 @@ async def get_user_progress(email: str):
     total_tasks = len(CHECKLIST)
     progress_percentage = (len(completed) / total_tasks * 100) if total_tasks > 0 else 0
     
-    # Группируем задачи по дням
+    # Group tasks by day
     tasks_by_day = {}
     for day in [1, 2, 3]:
         tasks_by_day[f"day_{day}"] = []
@@ -213,23 +213,23 @@ async def get_user_progress(email: str):
 @app.post("/api/users/tasks/complete")
 async def mark_task_complete(request: TaskCompleteRequest):
     """
-    Отметить задачу как выполненную для пользователя.
+    Mark task as completed for user.
     """
     email = request.email
     task_id = request.task_id
     
-    # Валидация task_id
+    # Validate task_id
     if task_id not in CHECKLIST:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid task_id. Must be between 1 and 9. Got: {task_id}"
         )
     
-    # Загружаем данные
+    # Load data
     data = load_user_data()
     user_data = get_user(email, data)
     
-    # Добавляем задачу если ее еще нет
+    # Add task if not already completed
     was_completed = task_id in user_data["completed_tasks"]
     if not was_completed:
         user_data["completed_tasks"].append(task_id)
@@ -254,12 +254,12 @@ async def mark_task_complete(request: TaskCompleteRequest):
 @app.post("/api/admin/users", response_model=AllUsersProgress)
 async def get_all_users_progress(request: MentorRequest):
     """
-    Получить прогресс всех пользователей.
-    Доступно только менторам из config.json.
+    Get progress for all users.
+    Only available to mentors from config.json.
     """
     mentor_email = request.mentor_email
     
-    # Проверяем, является ли email ментором
+    # Check if email is a mentor
     config = load_config()
     mentors = config.get("mentors", [])
     
@@ -269,7 +269,7 @@ async def get_all_users_progress(request: MentorRequest):
             detail=f"Access denied. {mentor_email} is not authorized as a mentor."
         )
     
-    # Загружаем данные всех пользователей
+    # Load all users data
     data = load_user_data()
     
     users_info = {}
@@ -295,7 +295,7 @@ async def get_all_users_progress(request: MentorRequest):
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint для мониторинга."""
+    """Health check endpoint for monitoring."""
     return {
         "status": "healthy",
         "timestamp": datetime.now().isoformat()
