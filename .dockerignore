@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Git
+.git/
+.gitignore
+
+# Documentation (не нужны в контейнере)
+*.md
+CHEATSHEET.md
+DEPLOY.md
+FORMATTING_EXAMPLES.md
+HTTP_API.md
+QUICKSTART.md
+README.md
+SIMPLE_SETUP.md
+WATSONX_SETUP.md
+ИНСТРУКЦИЯ.md
+
+# Test files
+test_*.py
+*_test.py
+test_api.sh
+
+# Nginx
+nginx.conf.example
+
+# Scripts
+quick_deploy.sh
+
+# Logs
+*.log
+
+# Database backups
+*.backup
+data.json.backup
+
+# Temporary files
+*.tmp
+.cache/
+

@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # HTTP API сервер
+  mcp-http-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: watsonx-mcp-http
+    ports:
+      - "8000:8000"
+    volumes:
+      # Монтируем volume для персистентности данных
+      - mcp-data:/app/data
+      # Монтируем конфигурационные файлы
+      - ./config.json:/app/config.json
+      - ./data.json:/app/data.json
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    command: python http_server.py
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Streamlit UI (опционально)
+  mcp-streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: watsonx-mcp-streamlit
+    ports:
+      - "8501:8501"
+    volumes:
+      - mcp-data:/app/data
+      - ./config.json:/app/config.json
+      - ./data.json:/app/data.json
+    environment:
+      - PYTHONUNBUFFERED=1
+      - API_URL=http://mcp-http-server:8000
+    restart: unless-stopped
+    command: streamlit run streamlit_app.py --server.port=8501 --server.address=0.0.0.0
+    depends_on:
+      - mcp-http-server
+
+volumes:
+  mcp-data:
+    driver: local
+

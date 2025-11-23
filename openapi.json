@@ -1,0 +1,332 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Onboarding Checklist API",
+    "description": "API for managing employee onboarding checklist progress",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://c16f287ee8a0.ngrok-free.app",
+      "description": "Ngrok tunnel to local development server"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Root",
+        "description": "Root endpoint with API information.",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/checklist": {
+      "get": {
+        "summary": "Get Checklist",
+        "description": "Get the complete onboarding checklist.",
+        "operationId": "get_checklist_api_checklist_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/{email}/progress": {
+      "get": {
+        "summary": "Get User Progress",
+        "description": "Get user's onboarding checklist progress by email. If the user doesn't exist, they are automatically created with zero progress.",
+        "operationId": "get_user_progress_api_users__email__progress_get",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Email"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetailedProgress"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/tasks/complete": {
+      "post": {
+        "summary": "Mark Task Complete",
+        "description": "Mark a specific task as completed for a user.",
+        "operationId": "mark_task_complete_api_users_tasks_complete_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaskCompleteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/users": {
+      "post": {
+        "summary": "Get All Users Progress",
+        "description": "Get progress of all users. Only accessible to mentors configured in config.json.",
+        "operationId": "get_all_users_progress_api_admin_users_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MentorRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AllUsersProgress"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "description": "Health check endpoint for monitoring.",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AllUsersProgress": {
+        "properties": {
+          "users": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Users"
+          },
+          "total_users": {
+            "type": "integer",
+            "title": "Total Users"
+          }
+        },
+        "type": "object",
+        "required": [
+          "users",
+          "total_users"
+        ],
+        "title": "AllUsersProgress"
+      },
+      "DetailedProgress": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "completed_tasks": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Completed Tasks"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "last_updated": {
+            "type": "string",
+            "title": "Last Updated"
+          },
+          "progress_percentage": {
+            "type": "number",
+            "title": "Progress Percentage"
+          },
+          "total_tasks": {
+            "type": "integer",
+            "title": "Total Tasks"
+          },
+          "tasks_by_day": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Tasks By Day"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "completed_tasks",
+          "created_at",
+          "last_updated",
+          "progress_percentage",
+          "total_tasks",
+          "tasks_by_day"
+        ],
+        "title": "DetailedProgress"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "MentorRequest": {
+        "properties": {
+          "mentor_email": {
+            "type": "string",
+            "format": "email",
+            "title": "Mentor Email"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mentor_email"
+        ],
+        "title": "MentorRequest"
+      },
+      "TaskCompleteRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "task_id": {
+            "type": "integer",
+            "title": "Task Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "task_id"
+        ],
+        "title": "TaskCompleteRequest"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
